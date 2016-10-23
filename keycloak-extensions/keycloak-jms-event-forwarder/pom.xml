@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.tdlabs</groupId>
+    <groupId>de.tdlabs.keycloak</groupId>
     <artifactId>keycloak-jms-event-forwarder</artifactId>
     <version>1.0.0.BUILD-SNAPSHOT</version>
 
