@@ -1,0 +1,64 @@
+html,
+body,
+.container
+{
+    font-family: arial, sans-serif;
+
+    width: 100%;
+    min-height: 100%;
+
+    background: #f7f7f7;
+}
+
+.tab-list-nav,
+.page-toolbar > div
+{
+    display: table-cell;
+}
+
+.page-toolbar
+{
+	border-top:2px solid #d1d1d1;
+	padding:20px 0;
+	width:100%;
+	margin-top:-2px;
+}
+
+/* table hacks */
+
+.table
+{
+	border:1px solid #d1d1d1;
+	color:#3c3c3c;
+	vertical-align: middle
+}
+
+tr:nth-child(even)
+{
+	background-color:#f1f1f1;
+}
+
+th
+{
+	background-color:#dcdcdc;
+    font-weight:bold;
+}
+
+/* custom js-demo-app css */
+
+table.first-col-right
+{
+    margin-top:2rem;
+}
+
+table.first-col-right th:first-of-type, 
+table.first-col-right td:first-of-type
+{
+    text-align: right;
+    white-space:nowrap
+}
+table.first-col-right th:last-of-type, 
+table.first-col-right td:last-of-type
+{
+    width:99%;
+}

@@ -1,0 +1,8 @@
+{
+  "realm": "demo",
+  "auth-server-url": "http://login.acme.local:8081/auth",
+  "ssl-required": "external",
+  "resource": "demo-js-app",
+  "public-client": true,
+  "use-resource-role-mappings": true
+}

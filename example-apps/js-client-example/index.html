@@ -1,0 +1,66 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta X-UA-Compatible="IE=Edge,chrome=1">
+    <title>IDToken JS Demo App</title>
+    <link rel="stylesheet" href="css/patternfly.min.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/forms.css">
+
+    <meta name="theme-color" content="#ffffff">
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/patternfly.js"></script>
+</head>
+
+<body>
+    <div class="container" style="margin-top:10rem">
+        <div class="row">
+            <div class="col-xs-12 col-sm-10 col-md-6 col-sm-offset-1 col-md-offset-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h1><b id="subject">loading...</b></h1>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table first-col-right" rules="cols">
+                            <tr>
+                                <th>User</th>
+                                <th><span id="username"></span></th>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td><span id="email"></span></td>
+                            </tr>
+                            <tr>
+                                <td>Full Name</td>
+                                <td><span id="name"></span></td>
+                            </tr>
+                            <tr>
+                                <td>First Name</td>
+                                <td><span id="givenName"></span></td>
+                            </tr>
+                            <tr>
+                                <td>Last Name</td>
+                                <td><span id="familyName"></span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="panel-footer">
+                        <button class="btn btn-primary" onclick="reloadData()">Reload data</button>
+                        <button class="btn btn-primary" onclick="openAccountPage()">Goto Account</button>
+                        <button class="btn btn-primary" onclick="greet('user')">Greet User</button>
+                        <button class="btn btn-primary" onclick="greet('admin')">Greet Admin</button>
+                        <button class="btn btn-default pull-right" onclick="keycloak.logout()">Sign Out</button>
+                    </div>
+                    <span class="small pull-right"><span id="profileType"></span> via @js-demo-app</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="http://login.acme.local:8081/auth/js/keycloak.js" type="text/javascript"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
