@@ -1,0 +1,3 @@
+[submodule "example-apps/javaee7-petclinic"]
+	path = example-apps/javaee7-petclinic
+	url = https://github.com/jugsaar/javaee7-petclinic
