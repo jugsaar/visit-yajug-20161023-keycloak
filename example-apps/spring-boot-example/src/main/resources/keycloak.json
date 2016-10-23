@@ -1,0 +1,8 @@
+{
+	"realm": "demo",
+	"bearer-only": true,
+	"auth-server-url": "${keycloakBaseUrl:http://login.acme.local:8081/auth}",
+	"ssl-required": "external",
+	"resource": "demo-spring-boot-bearer",
+	"use-resource-role-mappings": true
+}
