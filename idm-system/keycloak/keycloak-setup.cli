@@ -1,0 +1,81 @@
+echo using ${env.JBOSS_HOME}/standalone/configuration/standalone-ha.xml
+
+embed-server --server-config=standalone-ha.xml --std-out=echo
+
+echo SETUP: Begin Keycloak configuration...
+
+echo SETUP: Configure logging
+/subsystem=logging/console-handler=CONSOLE:change-log-level(level=ALL)
+
+echo SETUP: Add GELF logging 
+/subsystem=logging/custom-handler=GELF/:add(module=biz.paluch.logging, class=biz.paluch.logging.gelf.wildfly.WildFlyGelfLogHandler, properties={ \
+       host=${env.LOG_SERVER_URL}, \
+       port=${env.LOG_SERVER_PORT}, \
+#       originHost=${env.LOG_HOST_ALIAS:unknown}, \
+       version="1.1", \
+       extractStackTrace=true, \
+       filterStackTrace=true, \
+       mdcProfiling=false, \
+       timestampPattern="yyyy-MM-dd HH:mm:ss,SSSS", \
+       maximumMessageSize=8192, \
+       additionalFields="SystemGroup=idm,SystemComponent=idm-sso-keycloak", \
+       additionalFieldTypes="SystemGroup=String,SystemComponent=String,MessageParam0=String,MessageParam1=String,MessageParam2=String,MessageParam3=String,MessageParam4=String,MessageParam5=String,MessageParam6=String" \
+})
+/subsystem=logging/custom-handler=GELF/:change-log-level(level=ALL)
+
+/subsystem=logging/root-logger=ROOT/:write-attribute(name=level,value=INFO)
+/subsystem=logging/root-logger=ROOT/:write-attribute(name=handlers,value=[FILE,CONSOLE,GELF])
+
+# echo SETUP: Register custom logger here
+# /subsystem=logging/logger=com.acme:add(category=com.acme.myapp, use-parent-handlers=true, level=DEBUG)
+                          
+# echo SETUP: Adjust logging levels for custom loggers
+# /subsystem=logging/logger=com.acme:change-log-level(level=INFO)
+
+echo SETUP: Register Postgresql JDBC Driver
+/subsystem=datasources/jdbc-driver=postgres:add(driver-name="postgres",driver-module-name="org.postgres",driver-class-name=org.postgresql.Driver)
+
+echo SETUP: Configure Keycloak Datasource KeycloakDS 
+/subsystem=datasources/data-source=KeycloakDS/:remove 
+data-source add --jndi-name=java:jboss/datasources/KeycloakDS --name=KeycloakDS --connection-url=${env.JDBC_URL} --driver-name=${env.JDBC_DRIVERNAME:postgres} --user-name=${env.JDBC_USER:keycloak} --password=${env.JDBC_PASSWORD:keycloak}
+/subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=min-pool-size,value=5)
+/subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=max-pool-size,value=20)
+
+echo SETUP: Remove Datasource ExampleDS
+/subsystem=datasources/data-source=ExampleDS:remove
+/subsystem=ee/service=default-bindings:write-attribute(name=datasource, value=java:jboss/datasources/KeycloakDS)
+
+
+echo SETUP: Deploy ActiveMQ RAR
+deploy ${env.JBOSS_HOME}/activemq-rar.rar
+
+echo SETUP: Register ActiveMQ Resource Adapter
+/subsystem=resource-adapters:add()
+/subsystem=resource-adapters/resource-adapter=activemq-rar.rar:add(archive=activemq-rar.rar, transaction-support=XATransaction)
+/subsystem=resource-adapters/resource-adapter=activemq-rar.rar/config-properties=UseInboundSession:add(value=false)
+/subsystem=resource-adapters/resource-adapter=activemq-rar.rar/config-properties=UserName:add(value=${env.ACTIVE_MQ_USER:idm})
+/subsystem=resource-adapters/resource-adapter=activemq-rar.rar/config-properties=Password:add(value=${env.ACTIVE_MQ_PASSWORD:idm})
+/subsystem=resource-adapters/resource-adapter=activemq-rar.rar/config-properties=ServerUrl:add(value=${env.ACTIVE_MQ_URL})
+
+echo SETUP: Register ActiveMQ JMS ConnectionFactory
+# For connection-factory properties see: http://www.ironjacamar.org/doc/userguide/1.2/en-US/html_single/index.html  
+/subsystem=resource-adapters/resource-adapter=activemq-rar.rar/connection-definitions=ConnectionFactory:add(jndi-name=java:/jms/ConnectionFactory, class-name=org.apache.activemq.ra.ActiveMQManagedConnectionFactory, min-pool-size=3, max-pool-size=20, allocation-retry=1)
+# Unfortunately we cannot set a clientid here since it leads to exceptions of the form: javax.jms.InvalidClientIDException: Broker: <hostname> idm-keycloak - Client: already connected from <address>
+#/subsystem=resource-adapters/resource-adapter=activemq-rar.rar/connection-definitions=ConnectionFactory/config-properties=clientid:add(value=idm-keycloak)
+
+echo SETUP: Register ActiveMQ Keycloak event queue
+/subsystem=resource-adapters/resource-adapter=activemq-rar.rar/admin-objects=KeyCloakEventQueue:add(class-name=org.apache.activemq.command.ActiveMQQueue, jndi-name=java:/jms/queue/KeyCloakEventQueue, enabled=true)
+/subsystem=resource-adapters/resource-adapter=activemq-rar.rar/admin-objects=KeyCloakEventQueue/config-properties=PhysicalName:add(value=${env.KEYCLOAK_EVENT_QUEUE:idm.queue.keycloak.rawevents})
+
+echo SETUP: Configure Keycloak Context-Root
+# Hinweis: Falls der Context-Path abweichend zu /auth Konfiguriert wird sind ggf. Anpassungen in der Datenbank bzgl. base_url's und redirect_uri's notwendig!
+set contextPath=${env.KEYCLOAK_CONTEXT_PATH:u/auth}
+/subsystem=keycloak-server/:write-attribute(name="web-context",value=$contextPath)
+
+echo SETUP: Configure Undertow Proxy-Address-Forwarding for use behind Reverse Proxy
+/subsystem=undertow/server=default-server/http-listener=default/:write-attribute(name=proxy-address-forwarding,value=true)
+
+echo SETUP: Adjust provider configuration for custom modules
+/subsystem=keycloak-server:list-add(name=providers,value=module:de.tdlabs.keycloak.ext.jms-event-forwarder)
+
+echo SETUP: Finished Keycloak configuration.
