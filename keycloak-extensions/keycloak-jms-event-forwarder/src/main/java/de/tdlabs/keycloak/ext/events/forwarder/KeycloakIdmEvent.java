@@ -12,31 +12,29 @@ import org.keycloak.events.admin.AdminEvent;
 import lombok.Data;
 
 /**
- * Vereinheitlicht Keycloak {@link Event Event's} und {@link AdminEvent
+ * Unifies Keycloak {@link Event Event's} und {@link AdminEvent
  * AdminEvent's}.
- * 
- * @author tdarimont
  */
 @Data
 public class KeycloakIdmEvent {
 
 	/**
-	 * {@link UUID} ID des Events als {@link String}.
+	 * {@link UUID} ID of the Event as {@link String}.
 	 */
 	private String eventId;
 	
 	/**
-	 * Name der Keycloak Instanz welche das Event erzeugt hat.
+	 * Name of the Keycloak Instanz which created the event.
 	 */
 	private String instanceName;
 
 	/**
-	 * Technische Name des Realms.
+	 * Technical name of the Realm.
 	 */
 	private String realmId;
 
 	/**
-	 * {@link UUID} ID des Users als {@link String}.
+	 * {@link UUID} ID of the User as {@link String}.
 	 */
 	private String userId;
 
@@ -46,32 +44,32 @@ public class KeycloakIdmEvent {
 	private Type type;
 
 	/**
-	 * UNIX Timestamp des Events.
+	 * UNIX timestamp of the Event.
 	 */
 	private long timestamp;
 
 	/**
-	 * Kontext in dem das Event stattgefunden hat.
+	 * Context in which the event occured.
 	 */
 	private String contextId;
 
 	/**
-	 * Kontext Aktion die das {@link KeycloakIdmEvent} ausgelöst hat.
+	 * Context action which triggered the {@link KeycloakIdmEvent}.
 	 */
 	private String contextAction;
 
 	/**
-	 * Weitere Daten zum Kontext, wie etwa eine Datenänderung.
+	 * Additional context data
 	 */
 	private Map<String, Object> contextData = emptyMap();
 
 	/**
-	 * Audit Informationen wer das Event verursacht hat.
+	 * Holds audit information about who triggered the event creation.
 	 */
 	private AuditInfo auditInfo;
 
 	/**
-	 * Informationen zum Benutzer für den das Event gilt.
+	 * Holds information about the user the event was created for.
 	 */
 	private UserInfo userInfo;
 
@@ -94,20 +92,18 @@ public class KeycloakIdmEvent {
 	}
 
 	/**
-	 * Der Typ des Keycloak Events.
+	 * Typ of the Keycloak event.
 	 * 
 	 * @author tdarimont
 	 */
 	enum Type {
 		/**
-		 * {@code USER USER Event's} sind Keycloak Events die durch
-		 * Benutzeraktionen ausgelöst werden.
+		 * {@code USER USER Event's} are Keycloak Events created for user interaction.
 		 */
 		USER,
 
 		/**
-		 * {@code ADMIN AdminEvent's} sind Keycloak Events die durch
-		 * Administratoraktionen ausgelöst werden.
+		 * {@code ADMIN AdminEvent's} are Keycloak Events created for admin interaction.
 		 */
 		ADMIN
 	}

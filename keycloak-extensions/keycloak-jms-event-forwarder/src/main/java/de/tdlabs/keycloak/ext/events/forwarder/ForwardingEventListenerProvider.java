@@ -14,16 +14,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
- * Reagiert auf Keycloak {@link Event Event's} und gibt diese an das IdM
- * Provisioning via JMS Nachricht weiter.
+ * Reacts on Keycloak {@link Event Event's} and forwards those to the
+ * IdM Provisioning System via JMS Message.
  * <p>
- * Verwendet einen {@link IdmEventMapper} um die Keycloak spezifischen
- * {@link Event Event's} in {@link KeycloakIdmEvent IdmEvent's} umzuwandeln.
+ * Uses an {@link IdmEventMapper} to convert Keycloak specific
+ * {@link Event Event's} to {@link KeycloakIdmEvent IdmEvent's}.
  * <p>
- * Verwendet den {@link IdmEventPublisher} um die {@link KeycloakIdmEvent}
- * 
- * 
- * @author tdarimont
+ * Uses an {@link IdmEventPublisher} to publish the{@link KeycloakIdmEvent} to the IdM.
  */
 public class ForwardingEventListenerProvider implements EventListenerProvider {
 
@@ -40,7 +37,7 @@ public class ForwardingEventListenerProvider implements EventListenerProvider {
 	private IdmEventPublisher idmEventPublisher;
 
 	/**
-	 * Erzeugt einen neuen {@link ForwardingEventListenerProvider}
+	 * Creates a new {@link ForwardingEventListenerProvider}
 	 * 
 	 * @param keycloakSession
 	 * @param forwardedContextActions

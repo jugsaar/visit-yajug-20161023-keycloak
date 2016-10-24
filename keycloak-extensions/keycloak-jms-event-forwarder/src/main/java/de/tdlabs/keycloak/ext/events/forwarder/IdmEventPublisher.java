@@ -13,9 +13,7 @@ import javax.naming.NamingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Veröffentlicht {@link KeycloakIdmEvent IdmEvent's} via JMS Queue.
- * 
- * @author tdarimont
+ * Publishes {@link KeycloakIdmEvent IdmEvent's} via JMS Queue.
  */
 public class IdmEventPublisher {
 

@@ -4,9 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * Audit Informationen zu dem Verursacher eines {@link KeycloakIdmEvent IdmEvent's}.
- * 
- * @author tdarimont
+ * Audit information about the initiator of the {@link KeycloakIdmEvent IdmEvent}.
  */
 @Data
 @Builder

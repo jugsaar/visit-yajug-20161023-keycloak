@@ -13,9 +13,6 @@ import org.keycloak.events.EventListenerProviderFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 
-/**
- * @author tdarimont
- */
 public class JmsEventListenerProviderFactory implements EventListenerProviderFactory {
 
 	private static final Logger LOG = Logger.getLogger(JmsEventListenerProviderFactory.class);

@@ -29,24 +29,20 @@ import de.tdlabs.keycloak.ext.events.forwarder.UserInfo.UserInfoBuilder;
 import lombok.Getter;
 
 /**
- * �bersetzt Keycloaks interne Events ({@link Event} {@link AdminEvent}) in
- * einheitliche {@link KeycloakIdmEvent IdmEvent's}.
+ * Maps Keycloak internal Events ({@link Event} {@link AdminEvent}) into
+ * uniform {@link KeycloakIdmEvent IdmEvent's}.
  * 
- * {@link AdminEvent AdminEvent's} werden anhand ihrer REST Resource Paths
- * identifiziert.
- * 
- * @author tdarimont
+ * {@link AdminEvent AdminEvent's} types are identified by their REST Resource Path.
  */
-public class IdmEventMapper implements AutoCloseable {
+class IdmEventMapper implements AutoCloseable {
 
 	private static final Logger LOG = Logger.getLogger(IdmEventMapper.class);
 
 	/**
-	 * H�lt {@link MatchableIdmEventEnricherProvider} f�r Keycloak User
+	 * Holds a {@link MatchableIdmEventEnricherProvider} for Keycloak User
 	 * {@link Event Event's}.
 	 * <p>
-	 * Reihenfolge ist relevant, da der erste zutreffende EnricherProvider
-	 * verwendet wird.
+	 * Order is relevant, since the first matching EnricherProvider will be used.
 	 */
 	private static final List<MatchableIdmEventEnricherProvider> USER_EVENT_ENRICHER = asList( //
 			new UserEventEnricherProvider(), //
@@ -55,12 +51,11 @@ public class IdmEventMapper implements AutoCloseable {
 	);
 
 	/**
-	 * H�lt {@link MatchableIdmEventEnricherProvider} f�r Keycloak
+	 * Holds a {@link MatchableIdmEventEnricherProvider} for Keycloak
 	 * {@link AdminEvent AdminEvent's}.
 	 * 
 	 * <p>
-	 * Reihenfolge ist relevant, da der erste zutreffende EnricherProvider
-	 * verwendet wird.
+	 * Order is relevant, since the first matching EnricherProvider will be used.
 	 */
 	private static final List<MatchableIdmEventEnricherProvider> ADMIN_EVENT_ENRICHER = asList( //
 			new UserAdminEventEnricherProvider(), //
@@ -93,11 +88,11 @@ public class IdmEventMapper implements AutoCloseable {
 		this.userProvider = userProvider;
 	}
 
-	public KeycloakIdmEvent toIdmEvent(AdminEvent adminEvent) {
+	KeycloakIdmEvent toIdmEvent(AdminEvent adminEvent) {
 		return extractIdmEventFrom(new KeycloakEventAdapter(adminEvent));
 	}
 
-	public KeycloakIdmEvent toIdmEvent(Event event) {
+	KeycloakIdmEvent toIdmEvent(Event event) {
 		return extractIdmEventFrom(new KeycloakEventAdapter(event));
 	}
 
@@ -129,7 +124,7 @@ public class IdmEventMapper implements AutoCloseable {
 			}
 		}
 
-		return Optional.ofNullable(null);
+		return Optional.empty();
 	}
 
 	public void close() {
@@ -230,7 +225,7 @@ public class IdmEventMapper implements AutoCloseable {
 		return userInfoBuilder.build();
 	}
 
-	static interface MatchableIdmEventEnricherProvider {
+	interface MatchableIdmEventEnricherProvider {
 
 		String UUID_PATTERN_STRING = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 
@@ -239,9 +234,8 @@ public class IdmEventMapper implements AutoCloseable {
 		String GROUP_CONTEXT = "GROUP";
 
 		/**
-		 * Gibt einen {@link IdmEventEnricher} zur�ck falls das im
-		 * {@link KeycloakEventAdapter} enthaltene Event dem unterst�tzten Event
-		 * Pattern entspricht sonst {@literal null}.
+		 * Returns an {@link IdmEventEnricher} if the Event encapsulated by {@link KeycloakEventAdapter}
+		 * matches the Pattern else {@literal null}.
 		 * 
 		 * @param eventAdapter
 		 * @param matchingContext
@@ -264,9 +258,9 @@ public class IdmEventMapper implements AutoCloseable {
 		}
 
 		/**
-		 * Gibt einen {@link IdmEventEnricher} zur�ck mit dem ein
-		 * {@link KeycloakIdmEvent} mit Informationen aus dem Keycloak
-		 * {@link Event} bzw. {@link AdminEvent} angereichert werden kann.
+		 * Returns an {@link IdmEventEnricher} which can enrich a
+		 * {@link KeycloakIdmEvent} with information from the Keycloak
+		 * {@link Event} bzw. {@link AdminEvent}.
 		 * 
 		 * @param event
 		 * @param matchingContext
@@ -306,7 +300,7 @@ public class IdmEventMapper implements AutoCloseable {
 
 		private final Pattern pattern;
 
-		public AbstractMatchableAdminEventEnricherProvider(Pattern pattern) {
+		AbstractMatchableAdminEventEnricherProvider(Pattern pattern) {
 			this.pattern = pattern;
 		}
 
@@ -342,7 +336,7 @@ public class IdmEventMapper implements AutoCloseable {
 
 		private static final String UNSPECIFIED_ADMIN_EVENT = "UNSPECIFIED_ADMIN_EVENT";
 
-		public UnknownAdminEventEnricherProvider() {
+		UnknownAdminEventEnricherProvider() {
 			super(compile(".*"));
 		}
 
@@ -351,11 +345,10 @@ public class IdmEventMapper implements AutoCloseable {
 
 			return (idmEvent) -> {
 
-				// Wir haben keine weiteren Informationen zur Aktion.
+				// We don't have any forther information about the event
 				idmEvent.setContextAction(UNSPECIFIED_ADMIN_EVENT);
 				idmEvent.setContextId(UNSPECIFIED_ADMIN_EVENT);
-				// Resource Path und Representation Aufzeichnen f�r sp�tere
-				// Analysen.
+				// Record Resource Path und Representation for later analysis.
 				idmEvent.getContextData().put("representation", adminEvent.getRepresentation());
 				idmEvent.getContextData().put("resourcePath", matcher.group(0));
 			};
@@ -365,21 +358,21 @@ public class IdmEventMapper implements AutoCloseable {
 	static abstract class AbstractMatchableRoleMappingAdminEventEnricherProvider
 			extends AbstractMatchableAdminEventEnricherProvider {
 
-		protected static final String ROLES_ATTRIBUTE_NAME = "roles";
+		static final String ROLES_ATTRIBUTE_NAME = "roles";
 
 		private static final String GRANT_ROLE_ACTION = "GRANT_ROLE";
 
 		private static final String REVOKE_ROLE_ACTION = "REVOKE_ROLE";
 
-		protected static final String CLIENT_ROLE = "CLIENT_ROLE";
+		static final String CLIENT_ROLE = "CLIENT_ROLE";
 
-		protected static final String REALM_ROLE = "REALM_ROLE";
+		static final String REALM_ROLE = "REALM_ROLE";
 
-		public AbstractMatchableRoleMappingAdminEventEnricherProvider(Pattern pattern) {
+		AbstractMatchableRoleMappingAdminEventEnricherProvider(Pattern pattern) {
 			super(pattern);
 		}
 
-		protected KeycloakIdmEvent addRoleMappingEventDataToIdmEvent(KeycloakIdmEvent idmEvent, AdminEvent adminEvent,
+		KeycloakIdmEvent addRoleMappingEventDataToIdmEvent(KeycloakIdmEvent idmEvent, AdminEvent adminEvent,
 				String roleType, String roleOwnerId, ObjectMapper objectMapper) {
 
 			idmEvent.setContextId(ROLE_CONTEXT);
@@ -427,7 +420,7 @@ public class IdmEventMapper implements AutoCloseable {
 	static class ClientRoleMappingAdminEventEnricherProvider
 			extends AbstractMatchableRoleMappingAdminEventEnricherProvider {
 
-		public ClientRoleMappingAdminEventEnricherProvider() {
+		ClientRoleMappingAdminEventEnricherProvider() {
 			super(compile("^users/(" + UUID_PATTERN_STRING + ")/role-mappings/clients/(" + UUID_PATTERN_STRING + ")$"));
 		}
 
@@ -452,7 +445,7 @@ public class IdmEventMapper implements AutoCloseable {
 	static class RealmRoleMappingAdminEventEnricherProvider
 			extends AbstractMatchableRoleMappingAdminEventEnricherProvider {
 
-		public RealmRoleMappingAdminEventEnricherProvider() {
+		RealmRoleMappingAdminEventEnricherProvider() {
 			super(compile("^users/(" + UUID_PATTERN_STRING + ")/role-mappings/realm/?(" + UUID_PATTERN_STRING + ")?$"));
 		}
 
@@ -478,7 +471,7 @@ public class IdmEventMapper implements AutoCloseable {
 		private static final String CREATE_USER_ACTION = "CREATE_USER";
 		private static final String DELETE_USER_ACTION = "DELETE_USER";
 
-		public UserAdminEventEnricherProvider() {
+		UserAdminEventEnricherProvider() {
 			super(compile("^users/(" + UUID_PATTERN_STRING + ")$"));
 		}
 
@@ -516,7 +509,7 @@ public class IdmEventMapper implements AutoCloseable {
 
 		private static final String RESET_PASSWORD_ACTION = "RESET_PASSWORD";
 
-		public UserPasswordAdminEventEnricherProvider() {
+		UserPasswordAdminEventEnricherProvider() {
 			super(compile("^users/(" + UUID_PATTERN_STRING + ")/reset-password$"));
 		}
 
@@ -539,7 +532,7 @@ public class IdmEventMapper implements AutoCloseable {
 		private static final String JOIN_GROUP_ACTION = "JOIN_GROUP";
 		private static final String LEAVE_GROUP_ACTION = "LEAVE_GROUP";
 
-		public UserGroupAdminEventEnricherProvider() {
+		UserGroupAdminEventEnricherProvider() {
 			super(compile("^users/(" + UUID_PATTERN_STRING + ")/groups/(" + UUID_PATTERN_STRING + ")$"));
 		}
 
@@ -616,28 +609,28 @@ public class IdmEventMapper implements AutoCloseable {
 
 		private final RealmModel realmModel;
 
-		public MatchingContext(KeycloakEventAdapter eventAdapter) {
+		MatchingContext(KeycloakEventAdapter eventAdapter) {
 			this.realmModel = realmProvider.getRealm(eventAdapter.getRealmId());
 		}
 
-		public ObjectMapper getObjectMapper() {
+		ObjectMapper getObjectMapper() {
 			return objectMapper;
 		}
 	}
 
 	/**
-	 * Functional Interface zum Anreichern von {@link KeycloakIdmEvent
-	 * IdmEvent's}.
+	 * Functional Interface to enrich {@link KeycloakIdmEvent
+	 * IdmEvent's} with additional data.
 	 * 
 	 * @author tdarimont
 	 */
-	static interface IdmEventEnricher {
+	interface IdmEventEnricher {
 
 		void enrich(KeycloakIdmEvent idmEvent);
 	}
 
 	/**
-	 * Bietet vereinheitlichten Zugriff auf Keycloak {@link Event} und
+	 * Provides uniform access to Keycloak {@link Event} und
 	 * {@link AdminEvent}.
 	 * 
 	 * @author tdarimont
