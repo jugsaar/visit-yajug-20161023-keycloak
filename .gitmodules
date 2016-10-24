@@ -1,3 +1,6 @@
 [submodule "example-apps/javaee7-petclinic"]
 	path = example-apps/javaee7-petclinic
 	url = https://github.com/jugsaar/javaee7-petclinic
+[submodule "example-apps/spring-boot-keycloak-server-example"]
+	path = example-apps/spring-boot-keycloak-server-example
+	url = https://github.com/thomasdarimont/spring-boot-keycloak-server-example.git
