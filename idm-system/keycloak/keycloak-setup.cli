@@ -75,6 +75,14 @@ set contextPath=${env.KEYCLOAK_CONTEXT_PATH:u/auth}
 echo SETUP: Configure Undertow Proxy-Address-Forwarding for use behind Reverse Proxy
 /subsystem=undertow/server=default-server/http-listener=default/:write-attribute(name=proxy-address-forwarding,value=true)
 
+echo SETUP: Configure JGroups clustering
+
+echo SETUP: Enable multicast on public interface
+/interface=public:write-attribute(name=multicast,value=true)
+
+echo SETUP: Configure jgroups-tcp socket binding to use public interface
+/socket-binding-group=standard-sockets/socket-binding=jgroups-udp/:write-attribute(name=interface,value=public)
+
 echo SETUP: Adjust provider configuration for custom modules
 /subsystem=keycloak-server:list-add(name=providers,value=module:de.tdlabs.keycloak.ext.jms-event-forwarder)
 

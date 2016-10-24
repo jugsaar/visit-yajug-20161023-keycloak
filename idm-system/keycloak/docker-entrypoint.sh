@@ -15,5 +15,7 @@ echo
 echo "Starting Keycloak"
 java -version
 
-exec $JBOSS_HOME/bin/standalone.sh $@ 
+export CONTAINER_IP=$(hostname -i) 
+
+exec $JBOSS_HOME/bin/standalone.sh -b $CONTAINER_IP -bmanagement $CONTAINER_IP -Djboss.default.multicast.address=224.0.55.55 $@ 
 exit $?
