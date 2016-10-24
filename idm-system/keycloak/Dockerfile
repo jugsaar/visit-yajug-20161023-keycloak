@@ -4,6 +4,10 @@ FROM jboss/keycloak:2.3.0.CR1
 ENV KEYCLOAK_ADMIN_USER admin
 ENV KEYCLOAK_ADMIN_PASSWORD admin
 
+ENV SYSTEM_GROUP     idm
+ENV SYSTEM_COMPONENT sso
+ENV SYSTEM_PROFILE   test
+
 # Logging Properties
 ENV LOG_SERVER_URL   udp:graylog
 ENV LOG_SERVER_PORT  12123
@@ -50,4 +54,4 @@ COPY keycloak-jms-event-forwarder.jar /opt/jboss/keycloak/modules/de/tdlabs/keyc
 COPY docker-entrypoint.sh /opt/jboss 
 COPY keycloak-setup.cli /opt/jboss/keycloak
 
-CMD ["-b", "0.0.0.0", "-bmanagement", "0.0.0.0", "--server-config", "standalone-ha.xml"]
+CMD ["--server-config", "standalone-ha.xml"]
