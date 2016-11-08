@@ -4,6 +4,8 @@
 
 # Simple demo environment for a clustered Keycloak setup
 
+[Simple Docker based idm-system](https://github.com/jugsaar/visit-yajug-20161023-keycloak/tree/master/idm-system)
+
 ## Docker compose
 
 The composed system can be started via
