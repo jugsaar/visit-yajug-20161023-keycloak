@@ -1,6 +1,10 @@
+# Code and Slides from YaJUG talk in Luxembourg Oct 2016
+
+[Identity Management with Keycloak Oct. 2016](https://github.com/jugsaar/visit-yajug-20161023-keycloak/blob/master/OSS_SSO_IDM_KEYCLOAK_V4.pdf)
+
 # Simple demo environment for a clustered Keycloak setup
 
-# Docker compose
+## Docker compose
 
 The composed system can be started via
 ```
@@ -12,7 +16,7 @@ To shut the system down, just execute
 docker-compose down
 ```
 
-# Keycloak
+## Keycloak
 
 ### Build tdlabs/keycloak image  
 
@@ -34,7 +38,7 @@ Username: tester
 Password: test  
 
 
-# Graylog
+## Graylog
 
 ### Setup Graylog
 
@@ -66,7 +70,7 @@ URL: http://localhost:9000
 Username: admin  
 Password: admin  
 
-# ActiveMQ
+## ActiveMQ
 
 ### ActiveMQ admin-console
 
@@ -74,7 +78,7 @@ URL: http://localhost:8161/admin
 Username: admin  
 Password: admin  
 
-# HAProxy
+## HAProxy
 
 ### HA Proxy stats
 
